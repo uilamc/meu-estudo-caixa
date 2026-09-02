@@ -179,10 +179,33 @@ html,body{background:#EDEEF2;color:#1a1a2a;font-family:-apple-system,Arial,sans-
 .a-mat{font-size:10px;margin-bottom:7px;font-weight:600}
 .a-bar-track{height:5px;background:#E5E7EB;border-radius:3px;overflow:hidden;margin-bottom:4px}
 .a-bar-fill{height:100%;border-radius:3px}
-.a-nums{display:flex;justify-content:space-between;font-size:10px;color:#999}
+.a-nums{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#999}
+.a-zerar-btn{font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:999px;border:1.5px solid #FCA5A5;background:#FEF2F2;color:#DC2626;cursor:pointer;white-space:nowrap}
+.a-zerar-btn:hover{background:#FEE2E2}
 
 /* ── NÚCLEO (board) ── */
 .nu-board{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;margin:0 -16px;padding-left:16px;padding-right:16px}
+
+/* ── LANÇAR QUESTÕES ── */
+.lc-form{display:flex;flex-direction:column;gap:5px;max-width:420px}
+.lc-lbl{font-size:10.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-top:10px}
+.lc-lbl:first-child{margin-top:0}
+.lc-select{padding:11px 12px;border:1.5px solid #E5E7EB;border-radius:9px;font-size:13.5px;background:#F8F9FB;font-family:inherit;outline:none;transition:border .15s}
+.lc-select:focus{border-color:#4A8FF5}
+.lc-row{display:flex;gap:10px}
+.lc-field{flex:1;display:flex;flex-direction:column}
+.lc-input{padding:11px 12px;border:1.5px solid #E5E7EB;border-radius:9px;font-size:14px;font-weight:700;text-align:center;outline:none;transition:border .15s}
+.lc-input:focus{border-color:#4A8FF5}
+.lc-submit{margin-top:16px;padding:13px;border-radius:11px;border:none;background:#1a1a2a;color:#fff;font-size:14px;font-weight:800;cursor:pointer}
+.lc-submit:hover{opacity:.9}
+.lc-historico{display:flex;flex-direction:column;gap:8px}
+.lc-hist-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1.5px solid #EDEEF2;border-radius:10px;font-size:12.5px;gap:8px}
+.lc-hist-del{width:24px;height:24px;border-radius:50%;border:none;background:#F8F9FB;color:#B0B3BA;font-size:11px;cursor:pointer;flex-shrink:0}
+.lc-hist-del:hover{background:#FEF2F2;color:#DC2626}
+.lc-hist-topic{font-weight:700;color:#333}
+.lc-hist-mat{font-size:10.5px;color:#999}
+.lc-hist-res{font-weight:800;white-space:nowrap;margin-left:10px}
+.lc-empty{font-size:12.5px;color:#999;text-align:center;padding:20px 0}
 .nu-col{flex:0 0 240px;width:240px;background:#F8F9FB;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;max-height:640px}
 .nu-col-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;color:#fff;font-size:12px;font-weight:800;letter-spacing:.01em}
 .nu-col-count{background:rgba(255,255,255,.25);border-radius:999px;padding:1px 8px;font-size:11px}
@@ -246,6 +269,7 @@ html,body{background:#EDEEF2;color:#1a1a2a;font-family:-apple-system,Arial,sans-
     <button class="tab" onclick="showView('pesos')">Pesos</button>
     <button class="tab" onclick="showView('analise')">Análise</button>
     <button class="tab" onclick="showView('nucleo')">Núcleo</button>
+    <button class="tab" onclick="showView('lancar')">Lançar Questões</button>
   </div>
 </div>
 
@@ -348,6 +372,33 @@ html,body{background:#EDEEF2;color:#1a1a2a;font-family:-apple-system,Arial,sans-
     <div class="panel">
       <p class="view-note">Todo o edital organizado por matéria, com os tópicos e o peso de cada um (21 = maior incidência histórica na banca).</p>
       <div class="nu-board" id="nucleo-content"></div>
+    </div>
+  </div>
+
+  <!-- ══ LANÇAR QUESTÕES ══ -->
+  <div id="view-lancar" style="display:none">
+    <div class="panel">
+      <p class="view-note">Fez questões de um tema que não era o "da vez"? Lance aqui — conta normalmente pras estatísticas e ajusta a prioridade daquele tópico no ciclo.</p>
+      <div class="lc-form">
+        <label class="lc-lbl">Matéria</label>
+        <select id="lc-materia" class="lc-select" onchange="atualizarTopicosLancar()"></select>
+        <label class="lc-lbl">Tópico</label>
+        <select id="lc-topico" class="lc-select"></select>
+        <div class="lc-row">
+          <div class="lc-field">
+            <label class="lc-lbl">Questões feitas</label>
+            <input type="number" id="lc-total" class="lc-input" min="0" value="0">
+          </div>
+          <div class="lc-field">
+            <label class="lc-lbl">Questões certas</label>
+            <input type="number" id="lc-certas" class="lc-input" min="0" value="0">
+          </div>
+        </div>
+        <div class="mres" id="lc-res" style="display:none"></div>
+        <button class="lc-submit" onclick="lancarQuestoesManual()">✓ Lançar questões</button>
+      </div>
+      <div class="resumo-sec-title" style="margin-top:22px">Últimos lançamentos manuais</div>
+      <div id="lc-historico" class="lc-historico"></div>
     </div>
   </div>
 </div>
@@ -2689,6 +2740,7 @@ let scores={},stats={},sessionCount=0;
 let qsHoje=0,qsTotal=0,topicsStudied=0,totalCorrect=0;
 let streak=0,lastDate='',editalZeros=0,lapDone=new Set();
 let studyDates=new Set(),lastSnap=null;
+let manualLog=[];
 
 T.forEach((_,i)=>{scores[i]=0;stats[i]={total:0,correct:0,sessions:0};});
 
@@ -2740,7 +2792,7 @@ function ddiff(a,b){return Math.round((new Date(b)-new Date(a))/86400000);}
 function save(){
   localStorage.setItem(SK,JSON.stringify({
     scores,stats,sessionCount,qsHoje,qsTotal,topicsStudied,totalCorrect,
-    streak,lastDate,editalZeros,lapDone:[...lapDone],studyDates:[...studyDates]
+    streak,lastDate,editalZeros,lapDone:[...lapDone],studyDates:[...studyDates],manualLog
   }));
 }
 function load(){
@@ -2757,6 +2809,7 @@ function load(){
     if(d.editalZeros)editalZeros=d.editalZeros;
     if(d.lapDone)lapDone=new Set(d.lapDone);
     if(d.studyDates)studyDates=new Set(d.studyDates);
+    if(d.manualLog)manualLog=d.manualLog;
     const td=today();
     qsHoje=d.lastDate===td?(d.qsHoje||0):0;
     if(d.lastDate&&d.lastDate!==td&&ddiff(d.lastDate,td)>1)streak=0;
@@ -3269,18 +3322,19 @@ function pularSem(){
 function snap(){
   lastSnap=JSON.parse(JSON.stringify({
     scores,stats,sessionCount,qsHoje,qsTotal,topicsStudied,totalCorrect,
-    streak,lastDate,editalZeros,lapDone:[...lapDone],studyDates:[...studyDates]
+    streak,lastDate,editalZeros,lapDone:[...lapDone],studyDates:[...studyDates],manualLog
   }));
   document.getElementById('btn-undo').disabled=false;
 }
 function desfazer(){
   if(!lastSnap)return;
-  ({scores,stats,sessionCount,qsHoje,qsTotal,topicsStudied,totalCorrect,streak,lastDate,editalZeros}=lastSnap);
+  ({scores,stats,sessionCount,qsHoje,qsTotal,topicsStudied,totalCorrect,streak,lastDate,editalZeros,manualLog}=lastSnap);
   lapDone=new Set(lastSnap.lapDone);
   studyDates=new Set(lastSnap.studyDates);
   lastSnap=null;
   document.getElementById('btn-undo').disabled=true;
   save(); render();
+  renderHistoricoLancar();
 }
 
 // ─── ZEROU ───────────────────────────────────────────────────────────────────
@@ -3299,26 +3353,133 @@ function render(){
   buildFreq();
   document.getElementById('faltam-n').textContent=N-lapDone.size;
   document.getElementById('zeros-n').textContent=editalZeros;
+  // Os contadores abaixo são somados direto de stats[] a cada render — assim, qualquer
+  // forma de registrar progresso (Estudar agora, +revisão manual no Núcleo, ou a aba
+  // Lançar Questões) aparece aqui automaticamente, sem depender de um único fluxo.
+  const somaSessoes=Object.values(stats).reduce((s,x)=>s+(x&&x.sessions||0),0);
+  const somaQs=Object.values(stats).reduce((s,x)=>s+(x&&x.total||0),0);
+  const somaCertas=Object.values(stats).reduce((s,x)=>s+(x&&x.correct||0),0);
   document.getElementById('st-dias').textContent=studyDates.size;
   document.getElementById('st-sess').textContent=sessionCount;
-  document.getElementById('st-top').textContent=topicsStudied;
-  document.getElementById('st-qs').textContent=qsTotal;
-  document.getElementById('st-acc').textContent=qsTotal>0?Math.round(totalCorrect/qsTotal*100)+'%':'—';
+  document.getElementById('st-top').textContent=somaSessoes;
+  document.getElementById('st-qs').textContent=somaQs;
+  document.getElementById('st-acc').textContent=somaQs>0?Math.round(somaCertas/somaQs*100)+'%':'—';
   document.getElementById('st-hoje').textContent=qsHoje;
 }
 
 // ─── VIEWS ───────────────────────────────────────────────────────────────────
 function showView(v){
-  ['ciclo','pesos','analise','nucleo'].forEach(id=>{
+  ['ciclo','pesos','analise','nucleo','lancar'].forEach(id=>{
     document.getElementById('view-'+id).style.display=v===id?'block':'none';
   });
   document.getElementById('stats-bar').style.display=v==='ciclo'?'grid':'none';
   document.querySelectorAll('.tab').forEach((t,i)=>{
-    t.classList.toggle('on',['ciclo','pesos','analise','nucleo'][i]===v);
+    t.classList.toggle('on',['ciclo','pesos','analise','nucleo','lancar'][i]===v);
   });
   if(v==='pesos')renderPesos();
   if(v==='analise')renderAnalise();
   if(v==='nucleo')renderNucleo();
+  if(v==='lancar')renderLancar();
+}
+
+// ─── LANÇAR QUESTÕES (manual, qualquer tópico) ────────────────────────────────
+function renderLancar(){
+  const materias=[...new Set(T.map(t=>t.m))];
+  const selMat=document.getElementById('lc-materia');
+  selMat.innerHTML=materias.map(m=>`<option value="${m}">${m}</option>`).join('');
+  atualizarTopicosLancar();
+  document.getElementById('lc-total').value=0;
+  document.getElementById('lc-certas').value=0;
+  document.getElementById('lc-res').style.display='none';
+  renderHistoricoLancar();
+}
+function atualizarTopicosLancar(){
+  const mat=document.getElementById('lc-materia').value;
+  const selTop=document.getElementById('lc-topico');
+  const opts=[];
+  T.forEach((t,i)=>{if(t.m===mat)opts.push({i,t:t.t});});
+  selTop.innerHTML=opts.map(o=>`<option value="${o.i}">${o.t}</option>`).join('');
+}
+function lancarQuestoesManual(){
+  const idx=parseInt(document.getElementById('lc-topico').value);
+  const tot=parseInt(document.getElementById('lc-total').value)||0;
+  const ac=Math.min(parseInt(document.getElementById('lc-certas').value)||0,tot);
+  if(isNaN(idx)||tot<=0){
+    const inp=document.getElementById('lc-total');
+    inp.style.borderColor='#DC2626';
+    setTimeout(()=>inp.style.borderColor='',900);
+    return;
+  }
+  snap();
+  if(!stats[idx])stats[idx]={total:0,correct:0,sessions:0};
+  stats[idx].total+=tot; stats[idx].correct+=ac; stats[idx].sessions++;
+  qsHoje+=tot; qsTotal+=tot; totalCorrect+=ac;
+  const td=today();
+  if(lastDate!==td){
+    streak=(!lastDate||ddiff(lastDate,td)>1)?1:streak+1;
+    lastDate=td;
+  }
+  studyDates.add(td);
+  manualLog.unshift({idx,m:T[idx].m,t:T[idx].t,tot,ac,data:td});
+  if(manualLog.length>20)manualLog=manualLog.slice(0,20);
+  lapDone.add(idx);
+  if(lapDone.size>=N){
+    editalZeros++;lapDone=new Set();
+    setTimeout(()=>mostrarZero(editalZeros),500);
+  }
+  save();
+  const pct=Math.round(ac/tot*100);
+  const el=document.getElementById('lc-res');
+  let cls='good',txt='🎉 Excelente!';
+  if(pct<50){cls='bad';txt='📚 Precisa reforçar muito!';}
+  else if(pct<75){cls='mid';txt='👍 Atenção a esses erros.';}
+  el.className='mres '+cls;
+  el.textContent=`Lançado! ${ac}/${tot} — ${pct}% ${txt}`;
+  el.style.display='block';
+  document.getElementById('lc-total').value=0;
+  document.getElementById('lc-certas').value=0;
+  render();
+  renderHistoricoLancar();
+}
+function renderHistoricoLancar(){
+  const box=document.getElementById('lc-historico');
+  if(!manualLog.length){
+    box.innerHTML='<div class="lc-empty">Nenhum lançamento manual ainda.</div>';
+    return;
+  }
+  box.innerHTML=manualLog.map((l,li)=>{
+    const pct=l.tot>0?Math.round(l.ac/l.tot*100):0;
+    const cor=pct>=75?'#059669':pct>=50?'#CA8A04':'#DC2626';
+    return `<div class="lc-hist-item">
+      <div><div class="lc-hist-topic">${l.t}</div><div class="lc-hist-mat">${l.m} · ${l.data}</div></div>
+      <div class="lc-hist-res" style="color:${cor}">${l.ac}/${l.tot} (${pct}%)</div>
+      <button class="lc-hist-del" onclick="excluirLancamento(${li})" title="Excluir esse lançamento (lancei errado)">✕</button>
+    </div>`;
+  }).join('');
+}
+function excluirLancamento(li){
+  const entry=manualLog[li];
+  if(!entry)return;
+  snap();
+  let idx=entry.idx;
+  if(idx===undefined||idx===null||!T[idx]||T[idx].t!==entry.t){
+    idx=T.findIndex(x=>x.m===entry.m&&x.t===entry.t);
+  }
+  if(idx>=0&&stats[idx]){
+    stats[idx].total=Math.max(0,stats[idx].total-entry.tot);
+    stats[idx].correct=Math.max(0,stats[idx].correct-entry.ac);
+    stats[idx].sessions=Math.max(0,stats[idx].sessions-1);
+    if(stats[idx].sessions===0)lapDone.delete(idx);
+  }
+  if(entry.data===today())qsHoje=Math.max(0,qsHoje-entry.tot);
+  qsTotal=Math.max(0,qsTotal-entry.tot);
+  totalCorrect=Math.max(0,totalCorrect-entry.ac);
+  manualLog.splice(li,1);
+  save();
+  render();
+  renderAnalise();
+  renderNucleo();
+  renderHistoricoLancar();
 }
 
 function setRevisaoManual(i,valor){
@@ -3327,6 +3488,15 @@ function setRevisaoManual(i,valor){
   if(n>99)n=99;
   if(!stats[i])stats[i]={total:0,correct:0,sessions:0};
   stats[i].sessions=n;
+  if(n>0){
+    lapDone.add(i);
+    if(lapDone.size>=N){
+      editalZeros++;lapDone=new Set();
+      setTimeout(()=>mostrarZero(editalZeros),500);
+    }
+  } else {
+    lapDone.delete(i);
+  }
   save();
   renderNucleo();
   render();
@@ -3410,9 +3580,29 @@ function renderAnalise(){
       </div>
       <div class="a-mat" style="color:${mc.c}">${m} · Peso base: ${p}</div>
       <div class="a-bar-track"><div class="a-bar-fill" style="width:${pct}%;background:${barC}"></div></div>
-      <div class="a-nums"><span style="color:${barC};font-weight:700">${pct}% de acerto</span><span>${s.correct}/${s.total} questões</span></div>
+      <div class="a-nums">
+        <span style="color:${barC};font-weight:700">${pct}% de acerto</span>
+        <span>${s.correct}/${s.total} questões</span>
+        <button class="a-zerar-btn" onclick="zerarTopico(${i})" title="Zerar todas as questões e revisões desse tópico">🗑 Zerar</button>
+      </div>
     </div>`;
   }).join('');
+}
+function zerarTopico(i){
+  if(!T[i])return;
+  if(!confirm(`Zerar todos os dados de "${T[i].t}"? Isso apaga questões, acertos e revisões desse tópico. Não dá pra desfazer.`))return;
+  stats[i]={total:0,correct:0,sessions:0};
+  lapDone.delete(i);
+  manualLog=manualLog.filter(l=>{
+    let li=l.idx;
+    if(li===undefined||li===null||!T[li]||T[li].t!==l.t)li=T.findIndex(x=>x.m===l.m&&x.t===l.t);
+    return li!==i;
+  });
+  save();
+  render();
+  renderAnalise();
+  renderNucleo();
+  renderHistoricoLancar();
 }
 
 document.getElementById('ov-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)fecharModal();});
